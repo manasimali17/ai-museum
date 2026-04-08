@@ -8,7 +8,9 @@
 </head>
 <body>
 
-<a-scene background="color: #08060f" vr-mode-ui="enabled: false">
+<a-scene background="color: #08060f"
+  webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor"
+  vr-mode-ui="enabled: false">
 
   <!-- ═══════════════════════════════════════════════════════════
        GRAND HALL — Main Gallery
@@ -538,9 +540,39 @@
   <div id="loading" style="display:none">Thinking…</div>
 </div>
 
+<button id="ar-btn">Enter AR</button>
+
 <script>
   document.getElementById('chat-close').addEventListener('click', () => {
     document.getElementById('chat-panel').style.display = 'none';
+  });
+
+  const scene = document.querySelector('a-scene');
+  const arBtn = document.getElementById('ar-btn');
+
+  // Show button only if AR is supported
+  if (navigator.xr) {
+    navigator.xr.isSessionSupported('immersive-ar').then(supported => {
+      arBtn.style.display = supported ? 'block' : 'none';
+    });
+  } else {
+    arBtn.style.display = 'none';
+  }
+
+  arBtn.addEventListener('click', () => scene.enterAR());
+
+  scene.addEventListener('enter-vr', () => {
+    if (scene.is('ar-mode')) {
+      scene.setAttribute('background', 'transparent: true');
+      arBtn.textContent = 'Exit AR';
+      document.getElementById('move-btns').style.display = 'none';
+    }
+  });
+
+  scene.addEventListener('exit-vr', () => {
+    scene.setAttribute('background', 'color: #08060f');
+    arBtn.textContent = 'Enter AR';
+    document.getElementById('move-btns').style.display = 'flex';
   });
 </script>
 
