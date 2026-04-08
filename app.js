@@ -7,12 +7,12 @@ window.addEventListener("load", () => {
   exhibits.forEach((exhibit) => {
     exhibit.addEventListener("click", async () => {
       const topic = exhibit.getAttribute("data-topic");
-      await askClaude(topic);
+      await askGuide(topic);
     });
   });
 });
 
-async function askClaude(topic) {
+async function askGuide(topic) {
   const responseDiv = document.getElementById("chat-response");
   const loadingDiv = document.getElementById("loading");
 
