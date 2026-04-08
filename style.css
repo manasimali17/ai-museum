@@ -4,6 +4,17 @@ body { margin: 0; overflow: hidden; font-family: 'Cormorant Garamond', Georgia, 
 
 canvas { position: fixed !important; top: 0; left: 0; }
 
+#ar-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+#ar-overlay > *, #ar-overlay * {
+  pointer-events: auto;
+}
+
 #move-btns {
   position: fixed;
   bottom: 28px;

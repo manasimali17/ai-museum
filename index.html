@@ -9,7 +9,7 @@
 <body>
 
 <a-scene background="color: #08060f"
-  webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor"
+  webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor, dom-overlay; overlayElement: #ar-overlay"
   vr-mode-ui="enabled: false">
 
   <a-entity id="museum-root">
@@ -533,6 +533,8 @@
 
 </a-scene>
 
+<div id="ar-overlay">
+
 <div id="chat-panel">
   <div id="chat-title">🏛️ Musée Guide <span id="chat-close">✕</span></div>
   <div id="chat-response">
@@ -587,6 +589,8 @@
     <button id="btn-right">▶</button>
   </div>
 </div>
+
+</div> <!-- end ar-overlay -->
 
 <script>
   const keys = {};
