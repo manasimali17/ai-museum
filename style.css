@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+body { margin: 0; overflow: hidden; font-family: 'Cormorant Garamond', Georgia, serif; }
+
+#chat-panel {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 340px;
+  background: linear-gradient(160deg, rgba(12, 8, 2, 0.96) 0%, rgba(20, 14, 4, 0.94) 100%);
+  color: #f0e4c8;
+  border-radius: 4px;
+  padding: 20px 22px;
+  z-index: 999;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  border-top: 2px solid #c9a84c;
+  max-height: 42vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(201,168,76,0.2);
+}
+
+#chat-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+}
+
+#chat-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: #c9a84c;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+  padding-bottom: 10px;
+}
+
+#chat-response p {
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 0;
+  color: #e8dcc8;
+  font-weight: 400;
+}
+
+#chat-response strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #c9a84c;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+#loading {
+  font-size: 14px;
+  color: #c9a84c;
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+#ar-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: rgba(12, 8, 2, 0.92);
+  color: #c9a84c;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  border-top: 2px solid #c9a84c;
+  padding: 12px 22px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 999;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+#ar-btn:hover {
+  background: rgba(30, 20, 4, 0.96);
+}
+
+/* Scrollbar styling */
+#chat-panel::-webkit-scrollbar {
+  width: 4px;
+}
+#chat-panel::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+#chat-panel::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.4);
+  border-radius: 2px;
+}

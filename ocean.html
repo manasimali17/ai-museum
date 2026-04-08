@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Ocean — VR</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #hud {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(100, 220, 255, 0.75);
+      font-family: Georgia, serif;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      pointer-events: none;
+      text-shadow: 0 0 12px rgba(0, 160, 255, 0.9);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<a-scene background="color: #000814"
+  fog="type: exponential; color: #000c20; density: 0.018">
+
+  <!-- ═══════════════════════════════════
+       OCEAN FLOOR
+  ═══════════════════════════════════ -->
+  <a-plane rotation="-90 0 0" position="0 0 0" width="120" height="120"
+    material="color:#c4b266; roughness:0.95"></a-plane>
+  <!-- Sand ripples -->
+  <a-box position="-5 0.04 -8"   width="8" height="0.08" depth="0.6" rotation="0 20 0"  material="color:#b8a458; roughness:1"></a-box>
+  <a-box position="3 0.04 -5"    width="6" height="0.08" depth="0.5" rotation="0 -15 0" material="color:#b8a458; roughness:1"></a-box>
+  <a-box position="10 0.04 -12"  width="9" height="0.08" depth="0.7" rotation="0 35 0"  material="color:#b8a458; roughness:1"></a-box>
+  <a-box position="-8 0.04 -18"  width="7" height="0.08" depth="0.5" rotation="0 -25 0" material="color:#b8a458; roughness:1"></a-box>
+  <!-- Rocks -->
+  <a-sphere position="-8 0.4 -6"    scale="0.8 0.5 0.9" material="color:#6a6458; roughness:1"></a-sphere>
+  <a-sphere position="-9 0.3 -6.5"  scale="0.5 0.4 0.6" material="color:#7a7468; roughness:1"></a-sphere>
+  <a-sphere position="12 0.5 -10"   scale="1.0 0.6 0.8" material="color:#5a5448; roughness:1"></a-sphere>
+  <a-sphere position="11.5 0.2 -11" scale="0.4 0.35 0.5" material="color:#6a6458; roughness:1"></a-sphere>
+  <a-sphere position="-14 0.6 -18"  scale="1.2 0.7 1.0" material="color:#5a5448; roughness:1"></a-sphere>
+  <a-sphere position="0 0.35 -22"   scale="0.7 0.5 0.8" material="color:#6a6458; roughness:1"></a-sphere>
+  <a-sphere position="6 0.4 -18"    scale="0.9 0.55 0.7" material="color:#5a5448; roughness:1"></a-sphere>
+
+  <!-- ═══════════════════════════════════
+       LIGHT RAYS FROM SURFACE
+  ═══════════════════════════════════ -->
+  <a-plane position="2 12 -8"   rotation="-10 15 12"  width="1.5" height="28" material="color:#88ccff; opacity:0.06; transparent:true; side:double; depthWrite:false"></a-plane>
+  <a-plane position="-3 12 -10" rotation="-8 -20 8"   width="1.2" height="25" material="color:#88ccff; opacity:0.05; transparent:true; side:double; depthWrite:false"></a-plane>
+  <a-plane position="6 12 -14"  rotation="-12 5 -10"  width="1.8" height="30" material="color:#aaddff; opacity:0.07; transparent:true; side:double; depthWrite:false"></a-plane>
+  <a-plane position="-8 12 -6"  rotation="-6 30 15"   width="1.0" height="22" material="color:#88ccff; opacity:0.04; transparent:true; side:double; depthWrite:false"></a-plane>
+  <a-plane position="0 14 -18"  rotation="-5 0 5"     width="2.2" height="32" material="color:#aaddff; opacity:0.05; transparent:true; side:double; depthWrite:false"></a-plane>
+  <a-plane position="10 12 -5"  rotation="-15 -10 -8" width="1.3" height="26" material="color:#88ccff; opacity:0.06; transparent:true; side:double; depthWrite:false"></a-plane>
+  <a-plane position="-5 13 -20" rotation="-7 15 10"   width="1.4" height="28" material="color:#aaddff; opacity:0.05; transparent:true; side:double; depthWrite:false"></a-plane>
+
+  <!-- ═══════════════════════════════════
+       CORAL REEF
+  ═══════════════════════════════════ -->
+
+  <!-- Red branching coral -->
+  <a-cylinder position="-3 0.6 -10" radius="0.08" height="1.2" material="color:#cc2010; roughness:0.8"></a-cylinder>
+  <a-cylinder position="-3 1.2 -10" radius="0.06" height="0.8" rotation="0 0 25"   material="color:#dd3020; roughness:0.8"></a-cylinder>
+  <a-cylinder position="-3 1.2 -10" radius="0.06" height="0.8" rotation="0 120 -20" material="color:#cc2010; roughness:0.8"></a-cylinder>
+  <a-cylinder position="-3 1.2 -10" radius="0.06" height="0.8" rotation="0 240 15"  material="color:#dd3020; roughness:0.8"></a-cylinder>
+  <a-sphere position="-3 1.85 -10.3" radius="0.12" material="color:#ff4030; roughness:0.7"></a-sphere>
+  <a-sphere position="-2.65 1.75 -10" radius="0.10" material="color:#ff5040; roughness:0.7"></a-sphere>
+  <a-sphere position="-3.2 1.8 -9.7" radius="0.11" material="color:#ee3525; roughness:0.7"></a-sphere>
+
+  <!-- Orange tube coral cluster -->
+  <a-cylinder position="0 0.4 -12"    radius="0.10" height="0.8" material="color:#ff7a10; roughness:0.7"></a-cylinder>
+  <a-cylinder position="0.3 0.5 -12.2" radius="0.08" height="1.0" material="color:#ff8820; roughness:0.7"></a-cylinder>
+  <a-cylinder position="-0.25 0.45 -11.8" radius="0.09" height="0.9" material="color:#ff6a08; roughness:0.7"></a-cylinder>
+  <a-cylinder position="0.1 0.35 -11.7" radius="0.07" height="0.7" material="color:#ff8010; roughness:0.7"></a-cylinder>
+  <a-cylinder position="-0.4 0.5 -12.3" radius="0.08" height="1.0" material="color:#ff7a18; roughness:0.7"></a-cylinder>
+  <a-sphere position="0 0.84 -12"      radius="0.14" material="color:#ffaa30; emissive:#ff6600; emissiveIntensity:0.3"></a-sphere>
+  <a-sphere position="0.3 1.04 -12.2"  radius="0.12" material="color:#ffaa30; emissive:#ff6600; emissiveIntensity:0.3"></a-sphere>
+  <a-sphere position="-0.25 0.94 -11.8" radius="0.13" material="color:#ff9920; emissive:#ff5500; emissiveIntensity:0.3"></a-sphere>
+
+  <!-- Pink fan coral -->
+  <a-cylinder position="3 0.4 -10" radius="0.07" height="0.8" material="color:#cc4488; roughness:0.8"></a-cylinder>
+  <a-plane position="3 1.2 -10" width="1.6" height="1.2"
+    material="color:#dd55aa; opacity:0.72; transparent:true; side:double; roughness:0.8"></a-plane>
+  <a-box position="3 1.2 -9.99"  width="0.02" height="1.2" depth="0.02" material="color:#cc4488"></a-box>
+  <a-box position="2.7 1.2 -9.99" width="0.02" height="1.1" depth="0.02" rotation="0 0 -8" material="color:#cc4488"></a-box>
+  <a-box position="3.3 1.2 -9.99" width="0.02" height="1.1" depth="0.02" rotation="0 0 8"  material="color:#cc4488"></a-box>
+
+  <!-- Yellow brain coral -->
+  <a-sphere position="-5 0.5 -8"   scale="0.8 0.6 0.8" material="color:#ddcc20; roughness:0.95"></a-sphere>
+  <a-sphere position="-5.2 0.55 -8.2" scale="0.4 0.35 0.4" material="color:#ccbb18; roughness:0.95"></a-sphere>
+
+  <!-- Purple staghorn coral -->
+  <a-cylinder position="5 0.5 -8" radius="0.07" height="1.0" material="color:#9040cc; roughness:0.8"></a-cylinder>
+  <a-cylinder position="5 1.0 -8" radius="0.05" height="0.7" rotation="0 0 30"   material="color:#a050dd; roughness:0.8"></a-cylinder>
+  <a-cylinder position="5 1.0 -8" radius="0.05" height="0.7" rotation="0 90 -25" material="color:#9040cc; roughness:0.8"></a-cylinder>
+  <a-cylinder position="5 1.0 -8" radius="0.05" height="0.7" rotation="0 180 20" material="color:#a050dd; roughness:0.8"></a-cylinder>
+  <a-cylinder position="5 1.0 -8" radius="0.05" height="0.7" rotation="0 270 -30" material="color:#9040cc; roughness:0.8"></a-cylinder>
+  <a-sphere position="5 1.35 -8.35" radius="0.08" material="color:#cc60ff; emissive:#8020cc; emissiveIntensity:0.4"></a-sphere>
+  <a-sphere position="5.35 1.35 -8" radius="0.08" material="color:#cc60ff; emissive:#8020cc; emissiveIntensity:0.4"></a-sphere>
+  <a-sphere position="4.65 1.35 -8" radius="0.08" material="color:#cc60ff; emissive:#8020cc; emissiveIntensity:0.4"></a-sphere>
+  <a-sphere position="5 1.35 -7.65" radius="0.08" material="color:#cc60ff; emissive:#8020cc; emissiveIntensity:0.4"></a-sphere>
+
+  <!-- Teal/cyan coral (far right) -->
+  <a-cylinder position="8 0.4 -14"   radius="0.06" height="0.8" material="color:#10aa88; roughness:0.8"></a-cylinder>
+  <a-cylinder position="8.2 0.35 -14.3" radius="0.05" height="0.7" material="color:#12bb99; roughness:0.8"></a-cylinder>
+  <a-sphere position="8 0.84 -14"    radius="0.12" material="color:#20ddaa; emissive:#10aa88; emissiveIntensity:0.4"></a-sphere>
+  <a-sphere position="8.2 0.74 -14.3" radius="0.10" material="color:#20ddaa; emissive:#10aa88; emissiveIntensity:0.4"></a-sphere>
+
+  <!-- Small red coral cluster near rocks -->
+  <a-cylinder position="-7 0.35 -5.5"  radius="0.05" height="0.7" material="color:#cc3010; roughness:0.8"></a-cylinder>
+  <a-sphere position="-7 0.72 -5.5"    radius="0.10" material="color:#ff4020; roughness:0.7"></a-sphere>
+  <a-cylinder position="-7.3 0.28 -5.3" radius="0.04" height="0.56" material="color:#cc3010; roughness:0.8"></a-cylinder>
+  <a-sphere position="-7.3 0.58 -5.3"  radius="0.08" material="color:#ee3520; roughness:0.7"></a-sphere>
+
+  <!-- ═══════════════════════════════════
+       SEA ANEMONES
+  ═══════════════════════════════════ -->
+  <!-- Anemone 1 (pink/red) -->
+  <a-cylinder position="-2 0.1 -7" radius="0.18" height="0.2" material="color:#882244; roughness:0.9"></a-cylinder>
+  <a-cylinder position="-2 0.3 -7" radius="0.02" height="0.4" material="color:#cc3366"></a-cylinder>
+  <a-cylinder position="-1.88 0.28 -7" radius="0.02" height="0.38" rotation="0 0 15" material="color:#dd4477"></a-cylinder>
+  <a-cylinder position="-2.12 0.28 -7" radius="0.02" height="0.38" rotation="0 0 -15" material="color:#cc3366"></a-cylinder>
+  <a-cylinder position="-2 0.28 -6.88" radius="0.02" height="0.38" rotation="15 0 0" material="color:#dd4477"></a-cylinder>
+  <a-cylinder position="-2 0.28 -7.12" radius="0.02" height="0.38" rotation="-15 0 0" material="color:#cc3366"></a-cylinder>
+  <!-- Anemone 2 (orange) -->
+  <a-cylinder position="2 0.1 -9" radius="0.15" height="0.18" material="color:#664422; roughness:0.9"></a-cylinder>
+  <a-cylinder position="2 0.28 -9"    radius="0.018" height="0.36" material="color:#ff8833"></a-cylinder>
+  <a-cylinder position="1.9 0.26 -9"  radius="0.018" height="0.34" rotation="0 0 12" material="color:#ff9944"></a-cylinder>
+  <a-cylinder position="2.1 0.26 -9"  radius="0.018" height="0.34" rotation="0 0 -12" material="color:#ff8833"></a-cylinder>
+  <a-cylinder position="2 0.26 -8.9"  radius="0.018" height="0.34" rotation="12 0 0" material="color:#ff9944"></a-cylinder>
+  <a-cylinder position="2 0.26 -9.1"  radius="0.018" height="0.34" rotation="-12 0 0" material="color:#ff8833"></a-cylinder>
+
+  <!-- ═══════════════════════════════════
+       SEAWEED (animated sway)
+  ═══════════════════════════════════ -->
+  <a-cylinder position="-6 1.2 -9"    radius="0.05" height="2.4" material="color:#1a6820; roughness:0.9" animation="property:rotation; to:5 0 8;  dur:2200; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-6.4 0.9 -9.3" radius="0.04" height="1.8" material="color:#145a18; roughness:0.9" animation="property:rotation; to:-6 0 5; dur:1900; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-5.6 1.4 -8.7" radius="0.05" height="2.8" material="color:#1e7824; roughness:0.9" animation="property:rotation; to:4 0 -7; dur:2600; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-6.8 1.1 -10"  radius="0.04" height="2.2" material="color:#165a1a; roughness:0.9" animation="property:rotation; to:7 0 6;  dur:2000; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="7 1.3 -9"     radius="0.05" height="2.6" material="color:#1a6820; roughness:0.9" animation="property:rotation; to:-5 0 7; dur:2400; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="7.5 1.0 -9.5"  radius="0.04" height="2.0" material="color:#145a18; roughness:0.9" animation="property:rotation; to:6 0 -6; dur:2100; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="6.5 1.5 -8.5"  radius="0.05" height="3.0" material="color:#1e7824; roughness:0.9" animation="property:rotation; to:-4 0 -8;dur:2800; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-2 1.5 -15"   radius="0.05" height="3.0" material="color:#1a6820; roughness:0.9" animation="property:rotation; to:5 0 6;  dur:2300; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-1.5 1.2 -15.5" radius="0.04" height="2.4" material="color:#145a18; roughness:0.9" animation="property:rotation; to:-7 0 5; dur:2000; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="4 1.4 -16"    radius="0.05" height="2.8" material="color:#1e7824; roughness:0.9" animation="property:rotation; to:6 0 -5; dur:2500; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <!-- Kelp forest (tall, far back) -->
+  <a-cylinder position="-10 2.5 -20"   radius="0.06" height="5.0" material="color:#1a5a18; roughness:0.9" animation="property:rotation; to:8 0 6;  dur:3000; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-10.8 2.2 -20.5" radius="0.05" height="4.4" material="color:#145014; roughness:0.9" animation="property:rotation; to:-6 0 8; dur:2700; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="-9.3 2.8 -19.5" radius="0.06" height="5.6" material="color:#1e6820; roughness:0.9" animation="property:rotation; to:5 0 -7; dur:3200; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="9 2.3 -22"     radius="0.06" height="4.6" material="color:#1a5a18; roughness:0.9" animation="property:rotation; to:-7 0 5; dur:2900; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+  <a-cylinder position="9.6 2.0 -21"   radius="0.05" height="4.0" material="color:#145014; roughness:0.9" animation="property:rotation; to:6 0 -6; dur:2400; loop:true; dir:alternate; easing:easeInOutSine"></a-cylinder>
+
+  <!-- ═══════════════════════════════════
+       FISH SCHOOLS (orbiting)
+       Each fish = parent entity (orbits) + child entity (the fish shape)
+  ═══════════════════════════════════ -->
+
+  <!-- School A: Orange clownfish — orbit center (0, 3, -10) -->
+  <a-entity position="0 3 -10" animation="property:rotation; to:0 360 0; dur:14000; loop:true; easing:linear">
+    <a-entity position="5 0 0" rotation="0 -90 0">
+      <a-sphere scale="0.35 0.22 0.55" material="color:#ff6600; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.16" radius-top="0" height="0.28" position="0 0 0.32" rotation="180 0 0" material="color:#ff4400"></a-cone>
+      <a-sphere position="0.1 0.05 -0.2" scale="0.08 0.06 0.06" material="color:#ffffff"></a-sphere>
+      <a-box position="0 0 -0.05" width="0.38" height="0.05" depth="0.04" material="color:#ffffff; opacity:0.7; transparent:true"></a-box>
+    </a-entity>
+  </a-entity>
+  <a-entity position="0 3.5 -10" animation="property:rotation; to:0 360 0; dur:16000; loop:true; easing:linear">
+    <a-entity position="5 0.3 0.5" rotation="0 -90 0">
+      <a-sphere scale="0.3 0.19 0.48" material="color:#ff6600; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.14" radius-top="0" height="0.24" position="0 0 0.28" rotation="180 0 0" material="color:#ff4400"></a-cone>
+    </a-entity>
+  </a-entity>
+  <a-entity position="0 2.8 -10" animation="property:rotation; to:0 -360 0; dur:18000; loop:true; easing:linear">
+    <a-entity position="4.5 -0.5 0.8" rotation="0 -90 0">
+      <a-sphere scale="0.28 0.18 0.44" material="color:#ff7722; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.13" radius-top="0" height="0.22" position="0 0 0.26" rotation="180 0 0" material="color:#ff5510"></a-cone>
+    </a-entity>
+  </a-entity>
+  <a-entity position="0 3.2 -10" animation="property:rotation; to:0 360 0; dur:12000; loop:true; easing:linear">
+    <a-entity position="5.5 0.8 -0.6" rotation="0 -90 0">
+      <a-sphere scale="0.32 0.2 0.5" material="color:#ff5500; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.15" radius-top="0" height="0.26" position="0 0 0.3" rotation="180 0 0" material="color:#ff3300"></a-cone>
+    </a-entity>
+  </a-entity>
+
+  <!-- School B: Blue tang — orbit center (-8, 5, -15) -->
+  <a-entity position="-8 5 -15" animation="property:rotation; to:0 360 0; dur:10000; loop:true; easing:linear">
+    <a-entity position="4 0 0" rotation="0 -90 0">
+      <a-sphere scale="0.38 0.26 0.52" material="color:#1155dd; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.18" radius-top="0" height="0.3" position="0 0 0.3" rotation="180 0 0" material="color:#0033aa"></a-cone>
+      <a-sphere position="0.12 0.05 -0.22" scale="0.09 0.07 0.07" material="color:#ffffff"></a-sphere>
+    </a-entity>
+  </a-entity>
+  <a-entity position="-8 5 -15" animation="property:rotation; to:0 -360 0; dur:13000; loop:true; easing:linear">
+    <a-entity position="3.5 0.6 0.4" rotation="0 -90 0">
+      <a-sphere scale="0.32 0.22 0.46" material="color:#2266ee; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.16" radius-top="0" height="0.26" position="0 0 0.28" rotation="180 0 0" material="color:#0044bb"></a-cone>
+    </a-entity>
+  </a-entity>
+  <a-entity position="-8 5 -15" animation="property:rotation; to:0 360 0; dur:11000; loop:true; easing:linear">
+    <a-entity position="4.5 -0.4 -0.5" rotation="0 -90 0">
+      <a-sphere scale="0.35 0.24 0.5" material="color:#0044cc; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.17" radius-top="0" height="0.28" position="0 0 0.29" rotation="180 0 0" material="color:#002299"></a-cone>
+    </a-entity>
+  </a-entity>
+
+  <!-- School C: Yellow fish — orbit center (7, 2.5, -8) -->
+  <a-entity position="7 2.5 -8" animation="property:rotation; to:0 360 0; dur:9000; loop:true; easing:linear">
+    <a-entity position="3 0 0" rotation="0 -90 0">
+      <a-sphere scale="0.28 0.2 0.4" material="color:#ffcc00; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.14" radius-top="0" height="0.22" position="0 0 0.24" rotation="180 0 0" material="color:#eeaa00"></a-cone>
+    </a-entity>
+  </a-entity>
+  <a-entity position="7 2.5 -8" animation="property:rotation; to:0 -360 0; dur:11000; loop:true; easing:linear">
+    <a-entity position="2.8 0.4 0.3" rotation="0 -90 0">
+      <a-sphere scale="0.25 0.17 0.36" material="color:#ffdd20; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.12" radius-top="0" height="0.2" position="0 0 0.22" rotation="180 0 0" material="color:#eebb00"></a-cone>
+    </a-entity>
+  </a-entity>
+  <a-entity position="7 2.5 -8" animation="property:rotation; to:0 360 0; dur:8000; loop:true; easing:linear">
+    <a-entity position="3.3 -0.3 -0.5" rotation="0 -90 0">
+      <a-sphere scale="0.30 0.21 0.42" material="color:#ffcc10; roughness:0.3"></a-sphere>
+      <a-cone radius-bottom="0.15" radius-top="0" height="0.23" position="0 0 0.25" rotation="180 0 0" material="color:#eeaa00"></a-cone>
+    </a-entity>
+  </a-entity>
+
+  <!-- School D: Large green fish — deep water (0, 10, -25) -->
+  <a-entity position="0 10 -25" animation="property:rotation; to:0 360 0; dur:22000; loop:true; easing:linear">
+    <a-entity position="6 0 0" rotation="0 -90 0">
+      <a-sphere scale="0.55 0.35 0.9" material="color:#228855; roughness:0.35"></a-sphere>
+      <a-cone radius-bottom="0.26" radius-top="0" height="0.44" position="0 0 0.52" rotation="180 0 0" material="color:#116633"></a-cone>
+      <a-sphere position="0.15 0.08 -0.35" scale="0.12 0.1 0.1" material="color:#ffffff"></a-sphere>
+      <a-box position="0 0 -0.1" width="0.62" height="0.06" depth="0.04" material="color:#33aa66"></a-box>
+      <a-box position="0 0 0.2"  width="0.62" height="0.06" depth="0.04" material="color:#33aa66"></a-box>
+    </a-entity>
+  </a-entity>
+
+  <!-- ═══════════════════════════════════
+       JELLYFISH (animated bobbing)
+  ═══════════════════════════════════ -->
+
+  <!-- Jellyfish 1 — pink -->
+  <a-entity position="-4 4 -8" animation="property:position; to:-4 5.5 -8; dur:3000; loop:true; dir:alternate; easing:easeInOutSine">
+    <a-sphere scale="0.6 0.35 0.6" material="color:#ffaacc; opacity:0.65; transparent:true; emissive:#cc6688; emissiveIntensity:0.4"></a-sphere>
+    <a-sphere scale="0.4 0.22 0.4" material="color:#ff88bb; opacity:0.45; transparent:true; emissive:#ff4488; emissiveIntensity:0.5"></a-sphere>
+    <a-cylinder position="0 -0.4 0"       radius="0.018" height="0.8"  material="color:#ffbbdd; opacity:0.6; transparent:true"></a-cylinder>
+    <a-cylinder position="0.15 -0.38 0.1" radius="0.014" height="0.75" rotation="5 0 5"    material="color:#ffbbdd; opacity:0.55; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.15 -0.4 0.05" radius="0.014" height="0.82" rotation="-4 0 -6"  material="color:#ffbbdd; opacity:0.55; transparent:true"></a-cylinder>
+    <a-cylinder position="0.1 -0.42 -0.15" radius="0.014" height="0.85" rotation="3 0 4"    material="color:#ffbbdd; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.12 -0.38 -0.12" radius="0.012" height="0.7" rotation="-5 0 -4" material="color:#ffbbdd; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="0.05 -0.4 0.18" radius="0.012" height="0.78" rotation="4 0 2"    material="color:#ffbbdd; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.18 -0.4 -0.05" radius="0.013" height="0.8" rotation="-3 0 -5" material="color:#ffbbdd; opacity:0.5; transparent:true"></a-cylinder>
+  </a-entity>
+
+  <!-- Jellyfish 2 — blue/teal -->
+  <a-entity position="3 6 -12" animation="property:position; to:3 4 -12; dur:3800; loop:true; dir:alternate; easing:easeInOutSine">
+    <a-sphere scale="0.7 0.4 0.7" material="color:#55ddff; opacity:0.6; transparent:true; emissive:#22aadd; emissiveIntensity:0.5"></a-sphere>
+    <a-sphere scale="0.48 0.26 0.48" material="color:#88eeff; opacity:0.45; transparent:true; emissive:#44ccff; emissiveIntensity:0.6"></a-sphere>
+    <a-cylinder position="0 -0.45 0"        radius="0.02"  height="0.9"  material="color:#aaeeff; opacity:0.55; transparent:true"></a-cylinder>
+    <a-cylinder position="0.18 -0.43 0.12"  radius="0.016" height="0.85" rotation="5 0 5"   material="color:#aaeeff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.18 -0.45 0.06" radius="0.016" height="0.92" rotation="-4 0 -6" material="color:#aaeeff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="0.12 -0.47 -0.18" radius="0.016" height="0.95" rotation="3 0 4"   material="color:#aaeeff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.14 -0.43 -0.14" radius="0.014" height="0.8" rotation="-5 0 -4" material="color:#aaeeff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="0.06 -0.45 0.2"   radius="0.014" height="0.88" rotation="4 0 2"   material="color:#aaeeff; opacity:0.5; transparent:true"></a-cylinder>
+  </a-entity>
+
+  <!-- Jellyfish 3 — purple, small -->
+  <a-entity position="8 3.5 -6" animation="property:position; to:8 5.2 -6; dur:2600; loop:true; dir:alternate; easing:easeInOutSine">
+    <a-sphere scale="0.45 0.28 0.45" material="color:#cc88ff; opacity:0.65; transparent:true; emissive:#9933cc; emissiveIntensity:0.5"></a-sphere>
+    <a-sphere scale="0.3 0.18 0.3"   material="color:#ddaaff; opacity:0.5; transparent:true; emissive:#bb55ee; emissiveIntensity:0.6"></a-sphere>
+    <a-cylinder position="0 -0.32 0"        radius="0.014" height="0.64" material="color:#ddbbff; opacity:0.55; transparent:true"></a-cylinder>
+    <a-cylinder position="0.12 -0.3 0.08"  radius="0.012" height="0.6"  rotation="5 0 5"   material="color:#ddbbff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.12 -0.32 0.04" radius="0.012" height="0.66" rotation="-4 0 -6" material="color:#ddbbff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="0.08 -0.34 -0.12" radius="0.012" height="0.68" rotation="3 0 4"   material="color:#ddbbff; opacity:0.5; transparent:true"></a-cylinder>
+    <a-cylinder position="-0.1 -0.3 -0.1"  radius="0.01"  height="0.58" rotation="-5 0 -4" material="color:#ddbbff; opacity:0.5; transparent:true"></a-cylinder>
+  </a-entity>
+
+  <!-- ═══════════════════════════════════
+       MANTA RAY (slow glide past)
+  ═══════════════════════════════════ -->
+  <a-entity position="25 8 -20"
+    animation="property:position; to:-35 8 -20; dur:30000; loop:true; easing:linear">
+    <a-sphere scale="3.0 0.25 1.4" material="color:#222244; roughness:0.6"></a-sphere>
+    <a-box position="-2.5 0 0.3" width="2.5" height="0.1" depth="1.2" rotation="0 0 -15" material="color:#1a1a33; roughness:0.6"></a-box>
+    <a-box position="2.5 0 0.3"  width="2.5" height="0.1" depth="1.2" rotation="0 0 15"  material="color:#1a1a33; roughness:0.6"></a-box>
+    <a-cylinder position="0 0 1.8" radius="0.08" height="2.5" rotation="-80 0 0" material="color:#1a1a33; roughness:0.6"></a-cylinder>
+    <a-sphere position="0 -0.12 0" scale="2.4 0.12 1.0" material="color:#ccccdd; opacity:0.85; transparent:true; roughness:0.7"></a-sphere>
+  </a-entity>
+
+  <!-- ═══════════════════════════════════
+       SEA TURTLE (orbit near reef)
+  ═══════════════════════════════════ -->
+  <a-entity position="4 1.5 -6"
+    animation="property:rotation; to:0 360 0; dur:25000; loop:true; easing:linear">
+    <a-entity position="5 0.5 0" rotation="0 -90 0">
+      <a-sphere scale="0.6 0.3 0.75" material="color:#3a6620; roughness:0.9"></a-sphere>
+      <a-sphere position="0 0.22 0" scale="0.45 0.08 0.55" material="color:#2a4a14; roughness:0.9"></a-sphere>
+      <a-sphere position="0 0 -0.7" scale="0.25 0.22 0.28" material="color:#3a6620; roughness:0.9"></a-sphere>
+      <a-box position="0.55 0 -0.1"  width="0.6" height="0.06" depth="0.3" rotation="0 20 -10" material="color:#2a5518; roughness:0.9"></a-box>
+      <a-box position="-0.55 0 -0.1" width="0.6" height="0.06" depth="0.3" rotation="0 -20 10" material="color:#2a5518; roughness:0.9"></a-box>
+      <a-box position="0.4 0 0.5"    width="0.4" height="0.05" depth="0.2" rotation="0 -15 5"  material="color:#2a5518; roughness:0.9"></a-box>
+      <a-box position="-0.4 0 0.5"   width="0.4" height="0.05" depth="0.2" rotation="0 15 -5"  material="color:#2a5518; roughness:0.9"></a-box>
+    </a-entity>
+  </a-entity>
+
+  <!-- ═══════════════════════════════════
+       SUNKEN SHIP WRECK
+  ═══════════════════════════════════ -->
+  <a-entity position="-12 0 -25" rotation="0 20 -28">
+    <a-box position="0 1.5 0"    width="3.5" height="3.0" depth="10"  material="color:#4a3820; roughness:0.95"></a-box>
+    <a-box position="0 3.1 0"    width="3.8" height="0.2"  depth="10.2" material="color:#3a2a14; roughness:0.95"></a-box>
+    <a-box position="0 4.1 -2"   width="2.2" height="2.0"  depth="3.5"  material="color:#3a2a14; roughness:0.95"></a-box>
+    <!-- Broken mast -->
+    <a-cylinder position="-0.2 5.5 1" radius="0.18" height="4" rotation="0 0 -15" material="color:#2a1a08; roughness:0.95"></a-cylinder>
+    <a-cylinder position="-0.8 7.4 0.5" radius="0.5" height="0.3" material="color:#2a1a08; roughness:0.95"></a-cylinder>
+    <!-- Portholes -->
+    <a-torus position="1.76 1.8 -3" radius="0.25" radius-tubular="0.04" rotation="0 90 0" material="color:#6a5030; roughness:0.9"></a-torus>
+    <a-torus position="1.76 1.8 0"  radius="0.25" radius-tubular="0.04" rotation="0 90 0" material="color:#6a5030; roughness:0.9"></a-torus>
+    <a-torus position="1.76 1.8 3"  radius="0.25" radius-tubular="0.04" rotation="0 90 0" material="color:#6a5030; roughness:0.9"></a-torus>
+    <!-- Fallen hull piece -->
+    <a-box position="2 0.4 4" width="1.5" height="0.8" depth="3" rotation="15 0 45" material="color:#4a3820; roughness:0.95"></a-box>
+    <!-- Anchor -->
+    <a-cylinder position="4 0.5 3"  radius="0.12" height="1.5" rotation="20 0 0" material="color:#5a5050; roughness:0.8; metalness:0.4"></a-cylinder>
+    <a-box position="4 0.2 3.5"      width="1.2" height="0.15" depth="0.15"       material="color:#5a5050; roughness:0.8; metalness:0.4"></a-box>
+    <!-- Cannon -->
+    <a-cylinder position="-0.5 3.2 3" radius="0.18" height="1.8" rotation="0 0 -30" material="color:#5a5050; roughness:0.8; metalness:0.4"></a-cylinder>
+    <!-- Rope -->
+    <a-cylinder position="0.5 3.5 -0.5" radius="0.03" height="2.5" rotation="20 0 30" material="color:#5a4020; roughness:0.9"></a-cylinder>
+    <!-- Coral on wreck -->
+    <a-sphere position="1.5 1.2 2"  radius="0.3" material="color:#cc3020; roughness:0.9"></a-sphere>
+    <a-sphere position="-1.2 1.5 -4" radius="0.25" material="color:#ff7010; roughness:0.9"></a-sphere>
+    <a-cylinder position="0.5 1.8 -5" radius="0.04" height="0.8" material="color:#9040cc; roughness:0.8"></a-cylinder>
+    <a-sphere position="0.5 2.2 -5"  radius="0.1" material="color:#cc60ff; emissive:#8020cc; emissiveIntensity:0.4"></a-sphere>
+  </a-entity>
+
+  <!-- ═══════════════════════════════════
+       ANCIENT UNDERWATER RUINS
+  ═══════════════════════════════════ -->
+  <!-- Columns -->
+  <a-cylinder position="10 1.5 -22" radius="0.4" height="3.0" material="color:#c8c0a8; roughness:0.9"></a-cylinder>
+  <a-cylinder position="12 1.0 -22" radius="0.4" height="2.0" material="color:#c0b8a0; roughness:0.9"></a-cylinder>
+  <a-cylinder position="14 1.8 -22" radius="0.4" height="3.6" material="color:#c8c0a8; roughness:0.9"></a-cylinder>
+  <!-- Fallen column -->
+  <a-cylinder position="11.5 0.2 -20" radius="0.4" height="4" rotation="0 30 90" material="color:#b8b0a0; roughness:0.9"></a-cylinder>
+  <!-- Architrave -->
+  <a-box position="12 3.2 -22" width="4.5" height="0.5" depth="0.6" material="color:#c0b8a0; roughness:0.9"></a-box>
+  <!-- Mosaic floor -->
+  <a-plane rotation="-90 0 0" position="12 0.01 -22" width="6" height="4" material="color:#b0a890; roughness:0.95"></a-plane>
+  <a-box position="11 0.02 -22" width="1.4" height="0.02" depth="1.4" material="color:#a89880; roughness:0.95"></a-box>
+  <a-box position="13 0.02 -22" width="1.4" height="0.02" depth="1.4" material="color:#a89880; roughness:0.95"></a-box>
+  <a-box position="12 0.02 -21" width="1.4" height="0.02" depth="1.4" material="color:#a89880; roughness:0.95"></a-box>
+  <a-box position="12 0.02 -23" width="1.4" height="0.02" depth="1.4" material="color:#a89880; roughness:0.95"></a-box>
+  <!-- Coral on ruins -->
+  <a-sphere position="10 3.2 -22" radius="0.2" material="color:#ff4030; roughness:0.8"></a-sphere>
+  <a-sphere position="14 3.8 -22" radius="0.18" material="color:#cc3020; roughness:0.8"></a-sphere>
+  <a-cylinder position="12.5 0.4 -22.5" radius="0.04" height="0.8" material="color:#10aa88; roughness:0.8"></a-cylinder>
+  <a-sphere position="12.5 0.84 -22.5" radius="0.12" material="color:#20ddaa; emissive:#10aa88; emissiveIntensity:0.4"></a-sphere>
+
+  <!-- ═══════════════════════════════════
+       TREASURE CHEST
+  ═══════════════════════════════════ -->
+  <a-entity position="3 0 -8">
+    <a-box position="0 0.3 0"  width="0.7" height="0.6"  depth="0.5" material="color:#5a3808; roughness:0.9"></a-box>
+    <a-box position="0 0.68 -0.09" width="0.72" height="0.26" depth="0.52" rotation="-22 0 0" material="color:#4a2e06; roughness:0.9"></a-box>
+    <a-box position="0 0.38 0.26"  width="0.72" height="0.06" depth="0.02" material="color:#888840; metalness:0.7"></a-box>
+    <a-box position="0 0.14 0.26"  width="0.72" height="0.06" depth="0.02" material="color:#888840; metalness:0.7"></a-box>
+    <a-box position="0 0.5 0.27"   width="0.12" height="0.1"  depth="0.04" material="color:#c8a840; metalness:0.8"></a-box>
+    <a-sphere position="0 0.58 0" radius="0.22" material="color:#ffee60; opacity:0.45; transparent:true; emissive:#ffcc00; emissiveIntensity:1.2"></a-sphere>
+    <!-- Spilled coins -->
+    <a-cylinder position="0.25 0.02 0.18"  radius="0.06" height="0.02" rotation="10 30 0"  material="color:#c8a840; metalness:0.8"></a-cylinder>
+    <a-cylinder position="-0.2 0.02 0.22"  radius="0.06" height="0.02" rotation="5 -20 0"  material="color:#d0b048; metalness:0.8"></a-cylinder>
+    <a-cylinder position="0.1 0.02 0.28"   radius="0.06" height="0.02" rotation="8 10 0"   material="color:#c8a840; metalness:0.8"></a-cylinder>
+    <a-cylinder position="-0.12 0.02 0.12" radius="0.06" height="0.02" rotation="3 -40 0"  material="color:#d0b048; metalness:0.8"></a-cylinder>
+  </a-entity>
+  <a-light type="point" position="3 1.2 -8" color="#ffee60" intensity="0.9" distance="4"></a-light>
+
+  <!-- ═══════════════════════════════════
+       BUBBLES (animated rising)
+  ═══════════════════════════════════ -->
+  <a-sphere position="-3 0.5 -7"    radius="0.04" material="color:#aaeeff; opacity:0.4; transparent:true" animation="property:position; to:-3 20 -7;    dur:8000;  loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="-2.8 1.0 -7.2" radius="0.03" material="color:#aaeeff; opacity:0.35; transparent:true" animation="property:position; to:-2.4 22 -7.5; dur:10000; loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="-3.2 0.8 -6.8" radius="0.05" material="color:#aaeeff; opacity:0.3; transparent:true" animation="property:position; to:-3.6 18 -6.5; dur:7000;  loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="-11 1.5 -24"  radius="0.05" material="color:#aaeeff; opacity:0.35; transparent:true" animation="property:position; to:-11 22 -24;   dur:9000;  loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="-12.5 1 -25"  radius="0.04" material="color:#aaeeff; opacity:0.3; transparent:true" animation="property:position; to:-12 20 -25.5;  dur:11000; loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="3.2 0.8 -8"   radius="0.03" material="color:#ffeeaa; opacity:0.5; transparent:true" animation="property:position; to:3.5 14 -8;     dur:6000;  loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="2.8 0.9 -8"   radius="0.04" material="color:#ffeeaa; opacity:0.45; transparent:true" animation="property:position; to:2.5 17 -8;    dur:8000;  loop:true; easing:easeInCubic"></a-sphere>
+  <a-sphere position="0.5 0.5 -6"   radius="0.03" material="color:#aaeeff; opacity:0.35; transparent:true" animation="property:position; to:0.8 19 -6;    dur:9500;  loop:true; easing:easeInCubic"></a-sphere>
+
+  <!-- ═══════════════════════════════════
+       CAMERA
+  ═══════════════════════════════════ -->
+  <a-entity camera look-controls wasd-controls position="0 2 8">
+    <a-cursor color="#7fffd4" fuse="false"
+      material="color:#7fffd4; opacity:0.75"
+      geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.016">
+    </a-cursor>
+  </a-entity>
+
+  <!-- ═══════════════════════════════════
+       LIGHTING
+  ═══════════════════════════════════ -->
+  <a-light type="ambient"     color="#000d22" intensity="0.55"></a-light>
+  <a-light type="directional" position="2 30 5" color="#0066aa" intensity="0.75"></a-light>
+  <!-- Reef area -->
+  <a-light type="point" position="0 5 -10"   color="#0088cc" intensity="0.6" distance="16"></a-light>
+  <a-light type="point" position="-8 5 -15"  color="#006699" intensity="0.5" distance="12"></a-light>
+  <a-light type="point" position="8 4 -8"    color="#0077aa" intensity="0.5" distance="10"></a-light>
+  <!-- Bioluminescent coral -->
+  <a-light type="point" position="5 1.5 -8"  color="#8833ff" intensity="0.4" distance="5"></a-light>
+  <a-light type="point" position="0 1.5 -12" color="#ff6600" intensity="0.3" distance="4"></a-light>
+  <a-light type="point" position="-3 1.5 -10" color="#cc2010" intensity="0.25" distance="4"></a-light>
+  <!-- Treasure -->
+  <a-light type="point" position="3 2 -8"    color="#ffee60" intensity="0.5" distance="5"></a-light>
+  <!-- Ship area -->
+  <a-light type="point" position="-12 4 -25" color="#004466" intensity="0.4" distance="10"></a-light>
+  <!-- Ruins -->
+  <a-light type="point" position="12 4 -22"  color="#005577" intensity="0.4" distance="8"></a-light>
+
+</a-scene>
+
+<div id="hud">🌊 WASD to swim &nbsp;·&nbsp; Mouse to look</div>
+
+</body>
+</html>
