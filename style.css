@@ -30,16 +30,17 @@ canvas { position: fixed !important; top: 0; left: 0; }
   gap: 4px;
 }
 #move-btns button {
-  width: 52px;
-  height: 52px;
-  background: rgba(12, 8, 2, 0.82);
+  width: 64px;
+  height: 64px;
+  background: rgba(12, 8, 2, 0.88);
   color: #c9a84c;
-  border: 1px solid rgba(201,168,76,0.5);
-  border-radius: 6px;
-  font-size: 18px;
+  border: 1px solid rgba(201,168,76,0.6);
+  border-radius: 8px;
+  font-size: 22px;
   cursor: pointer;
   touch-action: none;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #chat-panel {
