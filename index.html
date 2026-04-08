@@ -6,22 +6,20 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <link rel="stylesheet" href="style.css">
   <script>
-    // Register AR transparency component BEFORE a-scene loads
     AFRAME.registerComponent('ar-passthrough', {
       init() {
-        this.el.addEventListener('enter-vr', () => {
-          if (this.el.is('ar-mode')) {
-            // Force full transparency so XR camera feed shows through
-            this.el.renderer.setClearColor(0x000000, 0);
-            this.el.renderer.setClearAlpha(0);
-            // Remove sky/background
-            const bg = this.el.components.background;
-            if (bg) bg.remove();
-          }
+        const scene = this.el;
+        scene.addEventListener('enter-vr', () => {
+          if (!scene.is('ar-mode')) return;
+          // Kill background component so it stops overriding clear color
+          scene.removeAttribute('background');
+          // Force WebGL canvas to be fully transparent — XR compositor shows camera feed behind it
+          scene.renderer.setClearColor(new THREE.Color(0, 0, 0), 0);
+          scene.renderer.clear();
         });
-        this.el.addEventListener('exit-vr', () => {
-          this.el.renderer.setClearColor(0x08060f, 1);
-          this.el.setAttribute('background', 'color: #08060f');
+        scene.addEventListener('exit-vr', () => {
+          scene.renderer.setClearColor(new THREE.Color('#08060f'), 1);
+          scene.setAttribute('background', 'color: #08060f');
         });
       }
     });
@@ -30,8 +28,8 @@
 <body>
 
 <a-scene background="color: #08060f"
-  webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor, dom-overlay; overlayElement: #ar-overlay"
-  renderer="alpha: true; antialias: true"
+  webxr="requiredFeatures: local; optionalFeatures: local-floor, hit-test, dom-overlay; overlayElement: #ar-overlay"
+  renderer="alpha: true; antialias: true; colorManagement: true"
   ar-passthrough
   vr-mode-ui="enabled: false">
 
