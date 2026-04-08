@@ -4,18 +4,11 @@
   <meta charset="UTF-8">
   <title>Musée de l'Intelligence — Paris</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<a-scene
-  arjs="sourceType: webcam; debugUIEnabled: false;"
-  vr-mode-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true; antialias: true;">
-
-  <a-marker preset="hiro">
-    <a-entity scale="0.04 0.04 0.04" position="0 0 0">
+<a-scene background="color: #08060f" vr-mode-ui="enabled: false">
 
   <!-- ═══════════════════════════════════════════════════════════
        GRAND HALL — Main Gallery
@@ -511,18 +504,25 @@
   <a-sphere position="-3.5 1.88 -29" radius="0.215" scale="1 0.55 1" material="color:#0c0808"></a-sphere>
   <a-cylinder position="-3.5 1.52 -29" radius="0.07" height="0.22" material="color:#d4b090"></a-cylinder>
 
-  <!-- ═══════════════ GLOBAL LIGHTING (inside marker) ═══════════════ -->
-  <a-light type="ambient" color="#f5e8c0" intensity="0.8"></a-light>
-  <a-light type="directional" position="0 10 5" intensity="0.6" color="#fff5d0"></a-light>
-
-    </a-entity>
-  </a-marker>
-
   <!-- ═══════════════ CAMERA ═══════════════ -->
-  <a-entity camera>
+  <a-entity camera look-controls="reverseMouseDrag: false" wasd-controls position="0 1.6 5">
     <a-cursor color="#c9a84c" fuse="false"
-      raycaster="objects: .clickable; far: 5"></a-cursor>
+      raycaster="objects: .clickable; far: 30"></a-cursor>
   </a-entity>
+
+  <!-- ═══════════════ GLOBAL LIGHTING ═══════════════ -->
+  <a-light type="ambient" color="#f5e8c0" intensity="0.35"></a-light>
+  <a-light type="point" position="0 4.5 -3" intensity="1.1" color="#ffeebb" distance="14"></a-light>
+  <a-light type="point" position="-9 4 -6" intensity="0.5" color="#ffd8a0" distance="8"></a-light>
+  <a-light type="point" position="9 4 -6" intensity="0.5" color="#ffd8a0" distance="8"></a-light>
+  <a-light type="point" position="0 4 -9" intensity="0.5" color="#ffe0b0" distance="7"></a-light>
+  <a-light type="point" position="0 4.5 -16.5" intensity="0.9" color="#ffeebb" distance="8"></a-light>
+  <a-light type="point" position="-17 4.5 -6" intensity="0.9" color="#ffeebb" distance="8"></a-light>
+  <a-light type="point" position="17 4.5 -6" intensity="0.9" color="#d0e8ff" distance="8"></a-light>
+  <a-light type="point" position="0 4.5 -27" intensity="0.6" color="#f0d080" distance="6"></a-light>
+  <a-light type="point" position="-4 1.8 -31.5" intensity="0.5" color="#ff9900" distance="4"></a-light>
+  <a-light type="point" position="4 1.8 -31.5" intensity="0.5" color="#ff9900" distance="4"></a-light>
+  <a-light type="point" position="0 3 3" intensity="0.3" color="#fff0d0" distance="6"></a-light>
 
 
 </a-scene>
@@ -530,8 +530,10 @@
 <div id="chat-panel">
   <div id="chat-title">🏛️ Musée Guide <span id="chat-close">✕</span></div>
   <div id="chat-response">
-    <p>Point your camera at the <strong>Hiro marker</strong> to see the museum in AR.<br><br>
-    <em>Print or display the marker, then tap an exhibit to learn more.</em></p>
+    <p>Bienvenue! Five galleries await you.<br><br>
+    <strong>Grand Hall</strong> → <strong>Galerie II</strong> → <strong>Galerie Profonde</strong><br>
+    <strong>Origines</strong> (left) · <strong>Avenir</strong> (right)<br><br>
+    <em>Tilt phone to look · Use arrows to walk · Tap a painting</em></p>
   </div>
   <div id="loading" style="display:none">Thinking…</div>
 </div>
@@ -540,6 +542,51 @@
   document.getElementById('chat-close').addEventListener('click', () => {
     document.getElementById('chat-panel').style.display = 'none';
   });
+</script>
+
+<div id="move-btns">
+  <button id="btn-fwd">▲</button>
+  <div>
+    <button id="btn-left">◀</button>
+    <button id="btn-back">▼</button>
+    <button id="btn-right">▶</button>
+  </div>
+</div>
+
+<script>
+  const camera = document.querySelector('[camera]');
+  const keys = {};
+  const speed = 0.07;
+
+  function move() {
+    const dir = new THREE.Vector3();
+    const camEl = document.querySelector('[camera]');
+    const rot = camEl.getAttribute('rotation');
+    const yaw = THREE.MathUtils.degToRad(rot.y);
+
+    if (keys.fwd)   { dir.z -= Math.cos(yaw); dir.x -= Math.sin(yaw); }
+    if (keys.back)  { dir.z += Math.cos(yaw); dir.x += Math.sin(yaw); }
+    if (keys.left)  { dir.z += Math.sin(yaw); dir.x -= Math.cos(yaw); }
+    if (keys.right) { dir.z -= Math.sin(yaw); dir.x += Math.cos(yaw); }
+
+    if (dir.length()) {
+      dir.normalize().multiplyScalar(speed);
+      const pos = camEl.getAttribute('position');
+      camEl.setAttribute('position', { x: pos.x + dir.x, y: pos.y, z: pos.z + dir.z });
+    }
+    requestAnimationFrame(move);
+  }
+  move();
+
+  const press  = (k, v) => e => { e.preventDefault(); keys[k] = v; };
+  document.getElementById('btn-fwd')  .addEventListener('touchstart', press('fwd',   true));
+  document.getElementById('btn-fwd')  .addEventListener('touchend',   press('fwd',   false));
+  document.getElementById('btn-back') .addEventListener('touchstart', press('back',  true));
+  document.getElementById('btn-back') .addEventListener('touchend',   press('back',  false));
+  document.getElementById('btn-left') .addEventListener('touchstart', press('left',  true));
+  document.getElementById('btn-left') .addEventListener('touchend',   press('left',  false));
+  document.getElementById('btn-right').addEventListener('touchstart', press('right', true));
+  document.getElementById('btn-right').addEventListener('touchend',   press('right', false));
 </script>
 
 <script src="app.js"></script>
