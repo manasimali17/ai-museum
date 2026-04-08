@@ -4,13 +4,20 @@
   <meta charset="UTF-8">
   <title>Musée de l'Intelligence — Paris</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.5/aframe/build/aframe-ar.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<a-scene background="color: #08060f"
-  webxr="optionalFeatures: hit-test, local-floor, bounded-floor"
-  vr-mode-ui="enabled: false">
+<a-scene
+  embedded
+  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+  vr-mode-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true; antialias: true;"
+  background="color: transparent">
+
+  <a-marker preset="hiro">
+    <a-entity scale="0.04 0.04 0.04" position="0 0 0">
 
   <!-- ═══════════════════════════════════════════════════════════
        GRAND HALL — Main Gallery
@@ -506,89 +513,34 @@
   <a-sphere position="-3.5 1.88 -29" radius="0.215" scale="1 0.55 1" material="color:#0c0808"></a-sphere>
   <a-cylinder position="-3.5 1.52 -29" radius="0.07" height="0.22" material="color:#d4b090"></a-cylinder>
 
+  <!-- ═══════════════ GLOBAL LIGHTING (inside marker) ═══════════════ -->
+  <a-light type="ambient" color="#f5e8c0" intensity="0.8"></a-light>
+  <a-light type="directional" position="0 10 5" intensity="0.6" color="#fff5d0"></a-light>
+
+    </a-entity>
+  </a-marker>
+
   <!-- ═══════════════ CAMERA ═══════════════ -->
-  <a-entity camera look-controls wasd-controls position="0 1.6 5">
+  <a-entity camera>
     <a-cursor color="#c9a84c" fuse="false"
-      raycaster="objects: .clickable; far: 30"></a-cursor>
+      raycaster="objects: .clickable; far: 5"></a-cursor>
   </a-entity>
 
-  <!-- ═══════════════ GLOBAL LIGHTING ═══════════════ -->
-  <a-light type="ambient" color="#f5e8c0" intensity="0.35"></a-light>
-  <!-- Grand Hall -->
-  <a-light type="point" position="0 4.5 -3" intensity="1.1" color="#ffeebb" distance="14"></a-light>
-  <a-light type="point" position="-9 4 -6" intensity="0.5" color="#ffd8a0" distance="8"></a-light>
-  <a-light type="point" position="9 4 -6" intensity="0.5" color="#ffd8a0" distance="8"></a-light>
-  <a-light type="point" position="0 4 -9" intensity="0.5" color="#ffe0b0" distance="7"></a-light>
-  <!-- Galerie II -->
-  <a-light type="point" position="0 4.5 -16.5" intensity="0.9" color="#ffeebb" distance="8"></a-light>
-  <!-- Salle des Origines — warm amber -->
-  <a-light type="point" position="-17 4.5 -6" intensity="0.9" color="#ffeebb" distance="8"></a-light>
-  <a-light type="point" position="-21 3.5 -6" intensity="0.4" color="#ffcc80" distance="5"></a-light>
-  <!-- Salle de l'Avenir — cool blue -->
-  <a-light type="point" position="17 4.5 -6" intensity="0.9" color="#d0e8ff" distance="8"></a-light>
-  <!-- Galerie Profonde — dim, candlelit -->
-  <a-light type="point" position="0 4.5 -27" intensity="0.6" color="#f0d080" distance="6"></a-light>
-  <a-light type="point" position="-4 1.8 -31.5" intensity="0.5" color="#ff9900" distance="4"></a-light>
-  <a-light type="point" position="4 1.8 -31.5" intensity="0.5" color="#ff9900" distance="4"></a-light>
-  <!-- Entrance -->
-  <a-light type="point" position="0 3 3" intensity="0.3" color="#fff0d0" distance="6"></a-light>
 
 </a-scene>
 
 <div id="chat-panel">
   <div id="chat-title">🏛️ Musée Guide <span id="chat-close">✕</span></div>
   <div id="chat-response">
-    <p>Bienvenue! Five galleries await you.<br><br>
-    <strong>Grand Hall</strong> → <strong>Galerie II</strong> → <strong>Galerie Profonde</strong><br>
-    <strong>Origines</strong> (left) · <strong>Avenir</strong> (right)<br><br>
-    <em>WASD to walk · Mouse to look · Click a painting</em></p>
+    <p>Point your camera at the <strong>Hiro marker</strong> to see the museum in AR.<br><br>
+    <em>Print or display the marker, then tap an exhibit to learn more.</em></p>
   </div>
   <div id="loading" style="display:none">Thinking…</div>
 </div>
 
-<button id="ar-btn">Enter AR</button>
-
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const scene = document.querySelector('a-scene');
-    const arBtn = document.getElementById('ar-btn');
-
-    // Check if AR is supported on this device/browser
-    if (navigator.xr) {
-      navigator.xr.isSessionSupported('immersive-ar').then(supported => {
-        if (supported) {
-          arBtn.style.display = 'block';
-        } else {
-          arBtn.textContent = 'AR Not Supported';
-          arBtn.disabled = true;
-          arBtn.style.opacity = '0.4';
-          arBtn.style.cursor = 'default';
-        }
-      });
-    } else {
-      arBtn.textContent = 'AR Not Available';
-      arBtn.disabled = true;
-      arBtn.style.opacity = '0.4';
-      arBtn.style.cursor = 'default';
-    }
-
-    arBtn.addEventListener('click', () => scene.enterAR());
-
-    document.getElementById('chat-close').addEventListener('click', () => {
-      document.getElementById('chat-panel').style.display = 'none';
-    });
-
-    scene.addEventListener('enter-vr', () => {
-      if (scene.is('ar-mode')) {
-        scene.setAttribute('background', 'transparent: true');
-        arBtn.textContent = 'Exit AR';
-      }
-    });
-
-    scene.addEventListener('exit-vr', () => {
-      scene.setAttribute('background', 'color: #08060f');
-      arBtn.textContent = 'Enter AR';
-    });
+  document.getElementById('chat-close').addEventListener('click', () => {
+    document.getElementById('chat-panel').style.display = 'none';
   });
 </script>
 

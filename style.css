@@ -74,29 +74,6 @@ body { margin: 0; overflow: hidden; font-family: 'Cormorant Garamond', Georgia, 
   letter-spacing: 0.05em;
 }
 
-#ar-btn {
-  display: none;
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  background: rgba(12, 8, 2, 0.92);
-  color: #c9a84c;
-  border: 1px solid rgba(201, 168, 76, 0.5);
-  border-top: 2px solid #c9a84c;
-  padding: 12px 22px;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  z-index: 999;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-#ar-btn:hover {
-  background: rgba(30, 20, 4, 0.96);
-}
 
 /* Scrollbar styling */
 #chat-panel::-webkit-scrollbar {
