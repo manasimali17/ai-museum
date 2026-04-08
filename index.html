@@ -10,6 +10,7 @@
 
 <a-scene background="color: #08060f"
   webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor, dom-overlay; overlayElement: #ar-overlay"
+  renderer="alpha: true"
   vr-mode-ui="enabled: false">
 
   <a-entity id="museum-root">
@@ -569,21 +570,24 @@
 
   scene.addEventListener('enter-vr', () => {
     if (scene.is('ar-mode')) {
-      scene.setAttribute('background', 'transparent: true');
+      scene.removeAttribute('background');
+      scene.renderer.setClearColor(0x000000, 0); // fully transparent — real world shows through
       arBtn.textContent = 'Exit AR';
 
-      // Scale museum to room-size and place 1.5m in front of user
+      // Place user INSIDE the museum: scale so walls feel real-room sized
+      // Museum grand hall is 24m wide — scale 0.15 makes it ~3.6m wide (room sized)
       setTimeout(() => {
         const cam = document.querySelector('[camera]');
         const museumRoot = document.getElementById('museum-root');
-        const yaw = new THREE.Euler().setFromQuaternion(cam.object3D.quaternion, 'YXZ').y;
-        museumRoot.setAttribute('scale', '0.08 0.08 0.08');
+        const camPos = cam.object3D.position;
+        // offset museum so camera starts at entrance (z=5 in museum space * 0.15 = 0.75m)
+        museumRoot.setAttribute('scale', '0.15 0.15 0.15');
         museumRoot.setAttribute('position', {
-          x: cam.object3D.position.x + Math.sin(yaw) * -1.5,
-          y: cam.object3D.position.y - 1.5,
-          z: cam.object3D.position.z + Math.cos(yaw) * -1.5
+          x: camPos.x,
+          y: camPos.y - 0.24, // align floor to ground
+          z: camPos.z + 0.75  // place entrance around user
         });
-      }, 800);
+      }, 1000);
     }
   });
 
@@ -610,8 +614,8 @@
 
 <script>
   const keys = {};
-  const speed = 0.05; // 3D walk speed
-  const arSpeed = 0.002; // AR speed (museum is scaled 0.08)
+  const speed = 0.05;    // 3D walk speed
+  const arSpeed = 0.015; // AR walk speed (museum scale 0.15)
 
   function move() {
     const camEl = document.querySelector('[camera]');
