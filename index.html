@@ -9,17 +9,78 @@
     AFRAME.registerComponent('ar-passthrough', {
       init() {
         const scene = this.el;
-        scene.addEventListener('enter-vr', () => {
+        let hitTestSource = null;
+        let placed = false;
+        const reticle = () => document.getElementById('reticle');
+        const museum  = () => document.getElementById('museum-root');
+        const shadow  = () => document.getElementById('shadow-plane');
+        const tapMsg  = () => document.getElementById('tap-msg');
+
+        scene.addEventListener('enter-vr', async () => {
           if (!scene.is('ar-mode')) return;
-          // Kill background component so it stops overriding clear color
+          placed = false;
           scene.removeAttribute('background');
-          // Force WebGL canvas to be fully transparent — XR compositor shows camera feed behind it
-          scene.renderer.setClearColor(new THREE.Color(0, 0, 0), 0);
-          scene.renderer.clear();
+          scene.renderer.setClearColor(new THREE.Color(0,0,0), 0);
+
+          // Show tap instruction
+          if (tapMsg()) tapMsg().style.display = 'block';
+          reticle().setAttribute('visible', true);
+          museum().setAttribute('visible', false);
+
+          // Set up hit-test to detect real floor
+          const xrSession = scene.renderer.xr.getSession();
+          const viewerSpace = await xrSession.requestReferenceSpace('viewer');
+          hitTestSource = await xrSession.requestHitTestSource({ space: viewerSpace });
+
+          // Each frame: move reticle to detected floor surface
+          scene.renderer.xr.addEventListener('sessionend', () => { hitTestSource = null; placed = false; });
+
+          scene.el = scene;
+          scene._arHitTestSource = hitTestSource;
         });
+
+        // Track hit-test results every frame
+        scene.addEventListener('renderstart', () => {
+          if (!scene.is('ar-mode') || !scene._arHitTestSource || placed) return;
+          const frame = scene.renderer.xr.getFrame();
+          if (!frame) return;
+          const refSpace = scene.renderer.xr.getReferenceSpace();
+          const hits = frame.getHitTestResults(scene._arHitTestSource);
+          if (hits.length > 0) {
+            const pose = hits[0].getPose(refSpace);
+            const m = pose.transform.matrix;
+            reticle().object3D.position.set(m[12], m[13], m[14]);
+            reticle().object3D.visible = true;
+          }
+        });
+
+        // Tap screen to place museum on real floor
+        document.addEventListener('touchend', (e) => {
+          if (!scene.is('ar-mode') || placed) return;
+          const ret = reticle();
+          if (!ret.object3D.visible) return;
+          placed = true;
+          const pos = ret.object3D.position;
+          museum().setAttribute('scale', '0.15 0.15 0.15');
+          museum().setAttribute('position', { x: pos.x, y: pos.y, z: pos.z });
+          museum().setAttribute('visible', true);
+          shadow().setAttribute('position', { x: pos.x, y: pos.y + 0.001, z: pos.z });
+          shadow().setAttribute('visible', true);
+          ret.setAttribute('visible', false);
+          if (tapMsg()) tapMsg().style.display = 'none';
+        });
+
         scene.addEventListener('exit-vr', () => {
+          placed = false;
           scene.renderer.setClearColor(new THREE.Color('#08060f'), 1);
           scene.setAttribute('background', 'color: #08060f');
+          museum().removeAttribute('scale');
+          museum().setAttribute('position', '0 0 0');
+          museum().setAttribute('visible', true);
+          shadow().setAttribute('visible', false);
+          reticle().setAttribute('visible', false);
+          if (tapMsg()) tapMsg().style.display = 'none';
+          scene._arHitTestSource = null;
         });
       }
     });
@@ -537,8 +598,26 @@
 
   </a-entity> <!-- end museum-root -->
 
+  <!-- Hit-test reticle: shows where museum will be placed on real floor -->
+  <a-entity id="reticle" visible="false">
+    <a-ring color="#c9a84c" radius-inner="0.04" radius-outer="0.07"
+      rotation="-90 0 0" material="side: double; opacity: 0.8"></a-ring>
+    <a-ring color="#ffffff" radius-inner="0.07" radius-outer="0.075"
+      rotation="-90 0 0" material="side: double; opacity: 0.4"></a-ring>
+  </a-entity>
+
+  <!-- Shadow-catching plane (invisible but catches shadows on real floor) -->
+  <a-plane id="shadow-plane" visible="false"
+    rotation="-90 0 0" width="20" height="20"
+    material="shader: shadow; opacity: 0.4; transparent: true"
+    receive-shadow="true"></a-plane>
+
   <!-- ═══════════════ GLOBAL LIGHTING ═══════════════ -->
   <a-light type="ambient" color="#f5e8c0" intensity="0.35"></a-light>
+  <a-light id="sun-light" type="directional" position="2 4 2" intensity="0.8"
+    color="#fff5e0" cast-shadow="true"
+    shadow-camera-left="-10" shadow-camera-right="10"
+    shadow-camera-top="10" shadow-camera-bottom="-10"></a-light>
   <a-light type="point" position="0 4.5 -3" intensity="1.1" color="#ffeebb" distance="14"></a-light>
   <a-light type="point" position="-9 4 -6" intensity="0.5" color="#ffd8a0" distance="8"></a-light>
   <a-light type="point" position="9 4 -6" intensity="0.5" color="#ffd8a0" distance="8"></a-light>
@@ -568,6 +647,7 @@
 </div>
 
 <button id="ar-btn">Enter AR</button>
+<div id="tap-msg">Point at your floor, then tap to place the museum</div>
 
 <script>
   document.getElementById('chat-close').addEventListener('click', () => {
@@ -591,31 +671,11 @@
   scene.addEventListener('enter-vr', () => {
     if (scene.is('ar-mode')) {
       arBtn.textContent = 'Exit AR';
-
-      // Place user INSIDE the museum: scale so walls feel real-room sized
-      // Museum grand hall is 24m wide — scale 0.15 makes it ~3.6m wide (room sized)
-      setTimeout(() => {
-        const cam = document.querySelector('[camera]');
-        const museumRoot = document.getElementById('museum-root');
-        const camPos = cam.object3D.position;
-        // offset museum so camera starts at entrance (z=5 in museum space * 0.15 = 0.75m)
-        museumRoot.setAttribute('scale', '0.15 0.15 0.15');
-        museumRoot.setAttribute('position', {
-          x: camPos.x,
-          y: camPos.y - 0.24, // align floor to ground
-          z: camPos.z + 0.75  // place entrance around user
-        });
-      }, 1000);
     }
   });
 
   scene.addEventListener('exit-vr', () => {
-    scene.setAttribute('background', 'color: #08060f');
     arBtn.textContent = 'Enter AR';
-    // Reset museum scale/position for 3D walkthrough
-    const museumRoot = document.getElementById('museum-root');
-    museumRoot.setAttribute('scale', '1 1 1');
-    museumRoot.setAttribute('position', '0 0 0');
   });
 </script>
 

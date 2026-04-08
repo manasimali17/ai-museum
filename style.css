@@ -135,6 +135,25 @@ canvas { position: fixed !important; top: 0; left: 0; }
   border-radius: 4px;
 }
 
+#tap-msg {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(12, 8, 2, 0.85);
+  color: #c9a84c;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-top: 2px solid #c9a84c;
+  padding: 14px 22px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 4px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
 /* Scrollbar styling */
 #chat-panel::-webkit-scrollbar {
   width: 4px;
