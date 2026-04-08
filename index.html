@@ -5,12 +5,34 @@
   <title>Musée de l'Intelligence — Paris</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Register AR transparency component BEFORE a-scene loads
+    AFRAME.registerComponent('ar-passthrough', {
+      init() {
+        this.el.addEventListener('enter-vr', () => {
+          if (this.el.is('ar-mode')) {
+            // Force full transparency so XR camera feed shows through
+            this.el.renderer.setClearColor(0x000000, 0);
+            this.el.renderer.setClearAlpha(0);
+            // Remove sky/background
+            const bg = this.el.components.background;
+            if (bg) bg.remove();
+          }
+        });
+        this.el.addEventListener('exit-vr', () => {
+          this.el.renderer.setClearColor(0x08060f, 1);
+          this.el.setAttribute('background', 'color: #08060f');
+        });
+      }
+    });
+  </script>
 </head>
 <body>
 
 <a-scene background="color: #08060f"
   webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor, dom-overlay; overlayElement: #ar-overlay"
-  renderer="alpha: true"
+  renderer="alpha: true; antialias: true"
+  ar-passthrough
   vr-mode-ui="enabled: false">
 
   <a-entity id="museum-root">
@@ -570,8 +592,6 @@
 
   scene.addEventListener('enter-vr', () => {
     if (scene.is('ar-mode')) {
-      scene.removeAttribute('background');
-      scene.renderer.setClearColor(0x000000, 0); // fully transparent — real world shows through
       arBtn.textContent = 'Exit AR';
 
       // Place user INSIDE the museum: scale so walls feel real-room sized
