@@ -12,6 +12,8 @@
   webxr="requiredFeatures: local-floor; optionalFeatures: hit-test, bounded-floor"
   vr-mode-ui="enabled: false">
 
+  <a-entity id="museum-root">
+
   <!-- ═══════════════════════════════════════════════════════════
        GRAND HALL — Main Gallery
        x: -12 → 12   z: 9 → -11   y: 0 → 5.5
@@ -512,6 +514,8 @@
       raycaster="objects: .clickable; far: 30"></a-cursor>
   </a-entity>
 
+  </a-entity> <!-- end museum-root -->
+
   <!-- ═══════════════ GLOBAL LIGHTING ═══════════════ -->
   <a-light type="ambient" color="#f5e8c0" intensity="0.35"></a-light>
   <a-light type="point" position="0 4.5 -3" intensity="1.1" color="#ffeebb" distance="14"></a-light>
@@ -565,14 +569,13 @@
     if (scene.is('ar-mode')) {
       scene.setAttribute('background', 'transparent: true');
       arBtn.textContent = 'Exit AR';
-      document.getElementById('move-btns').style.display = 'none';
+      // keep move buttons visible in AR so user can roam
     }
   });
 
   scene.addEventListener('exit-vr', () => {
     scene.setAttribute('background', 'color: #08060f');
     arBtn.textContent = 'Enter AR';
-    document.getElementById('move-btns').style.display = 'flex';
   });
 </script>
 
@@ -586,25 +589,40 @@
 </div>
 
 <script>
-  const camera = document.querySelector('[camera]');
   const keys = {};
   const speed = 0.07;
 
   function move() {
-    const dir = new THREE.Vector3();
     const camEl = document.querySelector('[camera]');
-    const rot = camEl.getAttribute('rotation');
-    const yaw = THREE.MathUtils.degToRad(rot.y);
+    const museumRoot = document.getElementById('museum-root');
+    const isAR = scene.is('ar-mode');
 
-    if (keys.fwd)   { dir.z -= Math.cos(yaw); dir.x -= Math.sin(yaw); }
-    if (keys.back)  { dir.z += Math.cos(yaw); dir.x += Math.sin(yaw); }
-    if (keys.left)  { dir.z += Math.sin(yaw); dir.x -= Math.cos(yaw); }
-    if (keys.right) { dir.z -= Math.sin(yaw); dir.x += Math.cos(yaw); }
+    if (Object.values(keys).some(Boolean)) {
+      // In AR: get yaw from real-world camera orientation via object3D
+      // In 3D: get yaw from rotation attribute
+      let yaw;
+      if (isAR) {
+        const euler = new THREE.Euler().setFromQuaternion(camEl.object3D.quaternion, 'YXZ');
+        yaw = euler.y;
+      } else {
+        yaw = THREE.MathUtils.degToRad(camEl.getAttribute('rotation').y);
+      }
 
-    if (dir.length()) {
+      const dir = new THREE.Vector3();
+      if (keys.fwd)   { dir.z -= Math.cos(yaw); dir.x -= Math.sin(yaw); }
+      if (keys.back)  { dir.z += Math.cos(yaw); dir.x += Math.sin(yaw); }
+      if (keys.left)  { dir.z += Math.sin(yaw); dir.x -= Math.cos(yaw); }
+      if (keys.right) { dir.z -= Math.sin(yaw); dir.x += Math.cos(yaw); }
       dir.normalize().multiplyScalar(speed);
-      const pos = camEl.getAttribute('position');
-      camEl.setAttribute('position', { x: pos.x + dir.x, y: pos.y, z: pos.z + dir.z });
+
+      if (isAR) {
+        // Move museum in opposite direction — feels like walking through it
+        const pos = museumRoot.getAttribute('position');
+        museumRoot.setAttribute('position', { x: pos.x - dir.x, y: pos.y, z: pos.z - dir.z });
+      } else {
+        const pos = camEl.getAttribute('position');
+        camEl.setAttribute('position', { x: pos.x + dir.x, y: pos.y, z: pos.z + dir.z });
+      }
     }
     requestAnimationFrame(move);
   }
