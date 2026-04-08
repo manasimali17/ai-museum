@@ -536,7 +536,7 @@
 </a-scene>
 
 <div id="chat-panel">
-  <div id="chat-title">🏛️ Musée Guide</div>
+  <div id="chat-title">🏛️ Musée Guide <span id="chat-close">✕</span></div>
   <div id="chat-response">
     <p>Bienvenue! Five galleries await you.<br><br>
     <strong>Grand Hall</strong> → <strong>Galerie II</strong> → <strong>Galerie Profonde</strong><br>
@@ -573,6 +573,10 @@
     }
 
     arBtn.addEventListener('click', () => scene.enterAR());
+
+    document.getElementById('chat-close').addEventListener('click', () => {
+      document.getElementById('chat-panel').style.display = 'none';
+    });
 
     scene.addEventListener('enter-vr', () => {
       if (scene.is('ar-mode')) {

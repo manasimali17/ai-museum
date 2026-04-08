@@ -27,6 +27,18 @@ body { margin: 0; overflow: hidden; font-family: 'Cormorant Garamond', Georgia, 
   background: linear-gradient(90deg, transparent, #c9a84c, transparent);
 }
 
+#chat-close {
+  float: right;
+  cursor: pointer;
+  color: #c9a84c;
+  font-size: 14px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+#chat-close:hover {
+  opacity: 1;
+}
+
 #chat-title {
   font-size: 13px;
   font-weight: 600;
