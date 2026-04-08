@@ -571,13 +571,29 @@
     if (scene.is('ar-mode')) {
       scene.setAttribute('background', 'transparent: true');
       arBtn.textContent = 'Exit AR';
-      // keep move buttons visible in AR so user can roam
+
+      // Scale museum to room-size and place 1.5m in front of user
+      setTimeout(() => {
+        const cam = document.querySelector('[camera]');
+        const museumRoot = document.getElementById('museum-root');
+        const yaw = new THREE.Euler().setFromQuaternion(cam.object3D.quaternion, 'YXZ').y;
+        museumRoot.setAttribute('scale', '0.08 0.08 0.08');
+        museumRoot.setAttribute('position', {
+          x: cam.object3D.position.x + Math.sin(yaw) * -1.5,
+          y: cam.object3D.position.y - 1.5,
+          z: cam.object3D.position.z + Math.cos(yaw) * -1.5
+        });
+      }, 800);
     }
   });
 
   scene.addEventListener('exit-vr', () => {
     scene.setAttribute('background', 'color: #08060f');
     arBtn.textContent = 'Enter AR';
+    // Reset museum scale/position for 3D walkthrough
+    const museumRoot = document.getElementById('museum-root');
+    museumRoot.setAttribute('scale', '1 1 1');
+    museumRoot.setAttribute('position', '0 0 0');
   });
 </script>
 
@@ -594,7 +610,8 @@
 
 <script>
   const keys = {};
-  const speed = 0.07;
+  const speed = 0.05; // 3D walk speed
+  const arSpeed = 0.002; // AR speed (museum is scaled 0.08)
 
   function move() {
     const camEl = document.querySelector('[camera]');
@@ -617,7 +634,7 @@
       if (keys.back)  { dir.z += Math.cos(yaw); dir.x += Math.sin(yaw); }
       if (keys.left)  { dir.z += Math.sin(yaw); dir.x -= Math.cos(yaw); }
       if (keys.right) { dir.z -= Math.sin(yaw); dir.x += Math.cos(yaw); }
-      dir.normalize().multiplyScalar(speed);
+      dir.normalize().multiplyScalar(isAR ? arSpeed : speed);
 
       if (isAR) {
         // Move museum in opposite direction — feels like walking through it
@@ -632,15 +649,17 @@
   }
   move();
 
-  const press  = (k, v) => e => { e.preventDefault(); keys[k] = v; };
-  document.getElementById('btn-fwd')  .addEventListener('touchstart', press('fwd',   true));
-  document.getElementById('btn-fwd')  .addEventListener('touchend',   press('fwd',   false));
-  document.getElementById('btn-back') .addEventListener('touchstart', press('back',  true));
-  document.getElementById('btn-back') .addEventListener('touchend',   press('back',  false));
-  document.getElementById('btn-left') .addEventListener('touchstart', press('left',  true));
-  document.getElementById('btn-left') .addEventListener('touchend',   press('left',  false));
-  document.getElementById('btn-right').addEventListener('touchstart', press('right', true));
-  document.getElementById('btn-right').addEventListener('touchend',   press('right', false));
+  const opts = { passive: false };
+  const press = (k, v) => e => { e.preventDefault(); e.stopPropagation(); keys[k] = v; };
+
+  [['btn-fwd','fwd'],['btn-back','back'],['btn-left','left'],['btn-right','right']].forEach(([id, k]) => {
+    const el = document.getElementById(id);
+    el.addEventListener('touchstart',  press(k, true),  opts);
+    el.addEventListener('touchend',    press(k, false), opts);
+    el.addEventListener('touchcancel', press(k, false), opts);
+    el.addEventListener('mousedown',   press(k, true));
+    el.addEventListener('mouseup',     press(k, false));
+  });
 </script>
 
 <script src="app.js"></script>
