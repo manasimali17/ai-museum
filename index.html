@@ -646,7 +646,7 @@
   <div id="loading" style="display:none">Thinking…</div>
 </div>
 
-<button id="ar-btn">Enter AR</button>
+<button id="ar-btn">Enter VR</button>
 <div id="tap-msg">Point at your floor, then tap to place the museum</div>
 
 <script>
@@ -670,12 +670,12 @@
 
   scene.addEventListener('enter-vr', () => {
     if (scene.is('ar-mode')) {
-      arBtn.textContent = 'Exit AR';
+      arBtn.textContent = 'Exit VR';
     }
   });
 
   scene.addEventListener('exit-vr', () => {
-    arBtn.textContent = 'Enter AR';
+    arBtn.textContent = 'Enter VR';
   });
 </script>
 
