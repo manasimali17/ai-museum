@@ -47,6 +47,11 @@
           document.getElementById('shadow-plane').setAttribute('visible', false);
           document.getElementById('reticle').setAttribute('visible', false);
           document.getElementById('tap-msg').style.display = 'none';
+          // Restore hidden elements
+          ['ar-hide-floor','ar-hide-ceiling','ar-hide-frontwall'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('visible', true);
+          });
         });
 
         // Tap to place museum on detected floor
@@ -64,6 +69,11 @@
         museum.setAttribute('scale', '0.15 0.15 0.15');
         museum.setAttribute('position', { x: pos.x, y: pos.y, z: pos.z });
         museum.setAttribute('visible', true);
+        // Hide floor, ceiling, front wall so real room is visible around the museum
+        ['ar-hide-floor','ar-hide-ceiling','ar-hide-frontwall'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.setAttribute('visible', false);
+        });
         document.getElementById('shadow-plane').setAttribute('position', { x: pos.x, y: pos.y + 0.001, z: pos.z });
         document.getElementById('shadow-plane').setAttribute('visible', true);
         document.getElementById('reticle').setAttribute('visible', false);
@@ -73,7 +83,9 @@
       tick() {
         if (!this.isAR) return;
 
-        // Force transparent every frame — overrides background component
+        // Force transparent every frame
+        // THREE.js scene.background MUST be null — otherwise it paints over the camera feed
+        this.el.object3D.background = null;
         this.el.renderer.setClearColor(0x000000, 0);
         this.el.renderer.setClearAlpha(0);
 
@@ -111,13 +123,13 @@
   ═══════════════════════════════════════════════════════════ -->
 
   <!-- Floor -->
-  <a-plane rotation="-90 0 0" position="0 0 -1" width="24" height="22"
+  <a-plane id="ar-hide-floor" rotation="-90 0 0" position="0 0 -1" width="24" height="22"
     material="color:#c8b090; roughness:0.2; metalness:0.1"></a-plane>
   <!-- Persian rug -->
   <a-plane rotation="-90 0 0" position="0 0.007 -3" width="4.4" height="14.4" material="color:#c9a84c"></a-plane>
   <a-plane rotation="-90 0 0" position="0 0.008 -3" width="4" height="14" material="color:#6b1a1a"></a-plane>
   <!-- Ceiling -->
-  <a-plane position="0 5.5 -1" rotation="90 0 0" width="24" height="22" material="color:#f0e6d4"></a-plane>
+  <a-plane id="ar-hide-ceiling" position="0 5.5 -1" rotation="90 0 0" width="24" height="22" material="color:#f0e6d4"></a-plane>
   <a-cylinder position="0 5.48 -3" radius="2.5" height="0.04" material="color:#e0d0b0"></a-cylinder>
   <a-cylinder position="0 5.49 -3" radius="1.8" height="0.04" material="color:#c9a84c; metalness:0.5"></a-cylinder>
   <a-cylinder position="0 5.5 -3" radius="1" height="0.04" material="color:#e8d8b8"></a-cylinder>
@@ -132,7 +144,7 @@
   <a-text value="Galerie II" position="0 3.85 -10.82" align="center" color="#c9a84c" width="4"></a-text>
 
   <!-- Front wall -->
-  <a-box position="0 2.75 9" width="24" height="5.5" depth="0.25" material="color:#ede0c8"></a-box>
+  <a-box id="ar-hide-frontwall" position="0 2.75 9" width="24" height="5.5" depth="0.25" material="color:#ede0c8"></a-box>
 
   <!-- LEFT SIDE WALL — split for Salle des Origines (z: -2 to -10) -->
   <a-box position="-12 2.75 3.5" width="0.25" height="5.5" depth="11" material="color:#ede0c8"></a-box>
