@@ -686,7 +686,13 @@
     arBtn.style.display = 'none';
   }
 
-  arBtn.addEventListener('click', () => scene.enterAR());
+  arBtn.addEventListener('click', () => {
+    if (scene.is('ar-mode')) {
+      scene.exitVR();
+    } else {
+      scene.enterAR();
+    }
+  });
 
   scene.addEventListener('enter-vr', () => {
     if (scene.is('ar-mode')) {
