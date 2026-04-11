@@ -702,6 +702,7 @@
 
   scene.addEventListener('exit-vr', () => {
     arBtn.textContent = 'Enter AR';
+    currentScale = 0.15; // reset for next AR session
   });
 </script>
 
@@ -714,6 +715,11 @@
     <button id="btn-back">▼</button>
     <button id="btn-right">▶</button>
   </div>
+</div>
+
+<div id="zoom-btns">
+  <button id="btn-zoom-in">＋</button>
+  <button id="btn-zoom-out">－</button>
 </div>
 
 <script>
@@ -768,6 +774,35 @@
     el.addEventListener('mousedown',   press(k, true));
     el.addEventListener('mouseup',     press(k, false));
   });
+
+  // Zoom: scale museum up/down in AR, only when placed
+  let currentScale = 0.15;
+  const SCALE_MIN = 0.03;
+  const SCALE_MAX = 0.6;
+  const SCALE_STEP = 0.01;
+
+  function zoom(dir) {
+    if (!scene.is('ar-mode')) return;
+    const museum = document.getElementById('museum-root');
+    currentScale = Math.min(SCALE_MAX, Math.max(SCALE_MIN, currentScale + dir * SCALE_STEP));
+    museum.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+  }
+
+  const zoomIn  = document.getElementById('btn-zoom-in');
+  const zoomOut = document.getElementById('btn-zoom-out');
+  let zoomInterval = null;
+
+  function startZoom(dir) { zoom(dir); zoomInterval = setInterval(() => zoom(dir), 80); }
+  function stopZoom()     { clearInterval(zoomInterval); }
+
+  zoomIn .addEventListener('touchstart',  e => { e.preventDefault(); startZoom(1);  }, opts);
+  zoomIn .addEventListener('touchend',    e => { e.preventDefault(); stopZoom();    }, opts);
+  zoomIn .addEventListener('mousedown',   () => startZoom(1));
+  zoomIn .addEventListener('mouseup',     () => stopZoom());
+  zoomOut.addEventListener('touchstart',  e => { e.preventDefault(); startZoom(-1); }, opts);
+  zoomOut.addEventListener('touchend',    e => { e.preventDefault(); stopZoom();    }, opts);
+  zoomOut.addEventListener('mousedown',   () => startZoom(-1));
+  zoomOut.addEventListener('mouseup',     () => stopZoom());
 </script>
 
 <script src="app.js"></script>
