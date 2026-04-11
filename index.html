@@ -702,7 +702,7 @@
 
   scene.addEventListener('exit-vr', () => {
     arBtn.textContent = 'Enter AR';
-    currentScale = 0.15; // reset for next AR session
+    window._arCurrentScale = 0.15;
   });
 </script>
 
@@ -723,6 +723,8 @@
 </div>
 
 <script>
+  window._arCurrentScale = 0.15;
+
   const keys = {};
   const speed = 0.05;    // 3D walk speed
   const arSpeed = 0.015; // AR walk speed (museum scale 0.15)
@@ -775,17 +777,16 @@
     el.addEventListener('mouseup',     press(k, false));
   });
 
-  // Zoom: scale museum up/down in AR, only when placed
-  let currentScale = 0.15;
+  // Zoom: scale museum up/down in AR
   const SCALE_MIN = 0.03;
   const SCALE_MAX = 0.6;
-  const SCALE_STEP = 0.01;
+  const SCALE_STEP = 0.015;
 
   function zoom(dir) {
-    if (!scene.is('ar-mode')) return;
     const museum = document.getElementById('museum-root');
-    currentScale = Math.min(SCALE_MAX, Math.max(SCALE_MIN, currentScale + dir * SCALE_STEP));
-    museum.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+    window._arCurrentScale = Math.min(SCALE_MAX, Math.max(SCALE_MIN, window._arCurrentScale + dir * SCALE_STEP));
+    const s = window._arCurrentScale;
+    museum.object3D.scale.set(s, s, s);
   }
 
   const zoomIn  = document.getElementById('btn-zoom-in');
@@ -793,14 +794,17 @@
   let zoomInterval = null;
 
   function startZoom(dir) { zoom(dir); zoomInterval = setInterval(() => zoom(dir), 80); }
-  function stopZoom()     { clearInterval(zoomInterval); }
+  function stopZoom()     { clearInterval(zoomInterval); zoomInterval = null; }
 
-  zoomIn .addEventListener('touchstart',  e => { e.preventDefault(); startZoom(1);  }, opts);
-  zoomIn .addEventListener('touchend',    e => { e.preventDefault(); stopZoom();    }, opts);
+  const zopts = { passive: false };
+  zoomIn .addEventListener('touchstart',  e => { e.preventDefault(); startZoom(1);  }, zopts);
+  zoomIn .addEventListener('touchend',    e => { e.preventDefault(); stopZoom();    }, zopts);
+  zoomIn .addEventListener('touchcancel', e => { e.preventDefault(); stopZoom();    }, zopts);
   zoomIn .addEventListener('mousedown',   () => startZoom(1));
   zoomIn .addEventListener('mouseup',     () => stopZoom());
-  zoomOut.addEventListener('touchstart',  e => { e.preventDefault(); startZoom(-1); }, opts);
-  zoomOut.addEventListener('touchend',    e => { e.preventDefault(); stopZoom();    }, opts);
+  zoomOut.addEventListener('touchstart',  e => { e.preventDefault(); startZoom(-1); }, zopts);
+  zoomOut.addEventListener('touchend',    e => { e.preventDefault(); stopZoom();    }, zopts);
+  zoomOut.addEventListener('touchcancel', e => { e.preventDefault(); stopZoom();    }, zopts);
   zoomOut.addEventListener('mousedown',   () => startZoom(-1));
   zoomOut.addEventListener('mouseup',     () => stopZoom());
 </script>
